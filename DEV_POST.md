@@ -1,3 +1,10 @@
+---
+title: LazyDesk AI — Your Digital Sloth Assistant 🦥 (Stay Lazy. Get Organized.)
+published: true
+tags: hacktoberfest, ai, openinnovation, python
+canonical_url: https://github.com/akashgt/lazydesk-ai
+---
+
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)*
 
 # LazyDesk AI 🦥
