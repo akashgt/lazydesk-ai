@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Sloth Mascot: Calm, Clever, Friendly, Forest Green Accents -->
+  <defs>
+    <linearGradient id="furGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C5A880"/>
+      <stop offset="100%" stop-color="#9C7A4F"/>
+    </linearGradient>
+    <linearGradient id="faceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FBF7EE"/>
+      <stop offset="100%" stop-color="#EADBCE"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tree branch with green leaf -->
+  <path d="M 5 85 Q 50 78 95 85" stroke="#5C4033" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <path d="M 85 81 Q 90 70 82 66 Q 76 75 85 81" fill="#40916C"/>
+
+  <!-- Sloth Body -->
+  <ellipse cx="50" cy="52" rx="34" ry="28" fill="url(#furGrad)"/>
+
+  <!-- Arms holding branch -->
+  <path d="M 22 55 Q 20 80 28 85" stroke="url(#furGrad)" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M 78 55 Q 80 80 72 85" stroke="url(#furGrad)" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- Claws -->
+  <path d="M 26 83 L 26 89 M 29 83 L 29 89 M 32 83 L 32 89" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 68 83 L 68 89 M 71 83 L 71 89 M 74 83 L 74 89" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Face mask -->
+  <ellipse cx="50" cy="46" rx="22" ry="18" fill="url(#faceGrad)"/>
+
+  <!-- Eye markings (dark eye stripes typical of sloths) -->
+  <path d="M 36 40 Q 42 44 43 51 Q 38 49 35 43 Z" fill="#6B4F35"/>
+  <path d="M 64 40 Q 58 44 57 51 Q 62 49 65 43 Z" fill="#6B4F35"/>
+
+  <!-- Eyes (calm, contented happy curve) -->
+  <path d="M 37 45 Q 40 48 42 45" stroke="#1F2937" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M 58 45 Q 60 48 63 45" stroke="#1F2937" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Snout and smile -->
+  <ellipse cx="50" cy="52" rx="6" ry="4" fill="#603813"/>
+  <path d="M 46 54 Q 50 58 54 54" stroke="#4A3B32" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Gentle blush -->
+  <circle cx="34" cy="51" r="3" fill="#F87171" opacity="0.4"/>
+  <circle cx="66" cy="51" r="3" fill="#F87171" opacity="0.4"/>
+</svg>
