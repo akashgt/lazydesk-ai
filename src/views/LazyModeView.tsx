@@ -48,7 +48,7 @@ export const LazyModeView: React.FC<LazyModeViewProps> = ({
   const steps = [
     { label: 'Folder Scanning', desc: 'Indexing files and measuring disk space' },
     { label: 'Duplicate Detection', desc: 'Computing SHA-256 hashes to find identical copies' },
-    { label: 'Local AI Categorization', desc: 'Qwen 2.5 3B organizing files into clean categories' },
+    { label: 'Local AI Categorization', desc: 'Google Gemma 2 2B organizing files into clean categories' },
     { label: 'Executive Document Summaries', desc: 'Extracting key takeaways & deadlines locally' },
     { label: 'Consolidated Action Plan', desc: 'Awaiting your approval before touching disk' },
   ];

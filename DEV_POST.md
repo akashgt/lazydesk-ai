@@ -1,7 +1,8 @@
 # LazyDesk AI — Your Digital Sloth Assistant 🦥
 ## Stay Lazy. Get Organized.
 
-*Submitted to the **Hacktoberfest Open-Source AI Challenge, Week 3 — “Slow and Steady”***
+*Submitted to the **Hacktoberfest Open-Source AI Challenge, Week 3 — “Slow and Steady”***  
+*Featuring Partner Integrations: **Google Gemma** & **Render***
 
 ---
 
@@ -11,7 +12,9 @@ Most people's computers have at least one terrifying directory—usually `Downlo
 
 Inspired by the philosophy of the sloth ("do less manual work and let automation handle the boring chores"), I built **LazyDesk AI**—a privacy-first desktop application that automatically scans cluttered folders, categorizes files, suggests clean standardized filenames, detects exact duplicates, and generates document summaries with key takeaways.
 
-Crucially, **LazyDesk AI sends zero data to cloud AI providers**. All file analysis, hashing, document extraction, and inference run entirely on your local machine using an open-weight model (`qwen2.5:3b`) powered by Ollama.
+Crucially, **LazyDesk AI sends zero confidential data to proprietary cloud AI APIs**. All file analysis, hashing, document extraction, and inference run entirely on your local machine using **Google Gemma 2 (`gemma2:2b`)** open weights powered by Ollama.
+
+LazyDesk AI also includes a production-ready **Render Blueprint (`render.yaml`)** and multi-stage container deployment for running hosted demonstrations safely in the cloud with automated sandboxing.
 
 ### Core Highlights
 - 🦥 **Lazy Mode**: A single-click pipeline that scans a cluttered folder, detects duplicates, proposes clean categories/filenames, and produces executive summaries—staged cleanly for your review before touching a single file on disk.
@@ -23,73 +26,65 @@ Crucially, **LazyDesk AI sends zero data to cloud AI providers**. All file analy
 
 ---
 
-## 2. Demo
+## 2. Partner Integrations
 
-Check out the verified demo walkthrough recording:
+### 🏆 Best Use of Gemma — Google Gemma 2 2B Integration
+LazyDesk AI uses Google's open-weight **Gemma 2 (`gemma2:2b`)** as its primary default intelligence engine:
+- **Genuine Local Inference**: We verified real local inference via Ollama (`ollama pull gemma2:2b`). Gemma 2 inspects document snippets, proposes clean filenames (e.g., transforming `Invoice_2026_Q1_draft (1).pdf` into `Acme_Consulting_Invoice_2026-03-31.pdf`), and assigns accurate categories (`Finance`, `Work & Study`, etc.).
+- **Deterministic JSON Schemas**: We crafted specialized JSON-constrained system prompts tailored to Gemma 2's reasoning format, bounded by `num_ctx: 1536` and `temperature: 0.1` for snappy inference and strict validation against Pydantic schemas.
+- **Model Adapter Flexibility**: While Gemma 2 is the default powerhouse, our AI adapter pattern preserves user choice—allowing one-click switching to `qwen2.5:3b`, `llama3.2:3b`, or any installed Ollama model.
+- **Licensing & Auditability**: Gemma 2 is distributed under the Google Gemma Terms of Use, providing verifiable open weights with no telemetry or external leakage.
+
+### 🏆 Best Use of Render — Cloud Deployment & Hosted Demo Blueprint
+LazyDesk AI makes full use of **Render** to bridge the gap between local privacy-first desktop tools and cloud-accessible demonstrations:
+- **Render Blueprint (`render.yaml`)**: An Infrastructure-as-Code Blueprint defining the complete web service with Docker environment, environment variables, and automated builds.
+- **Multi-Stage Container (`Dockerfile`)**: Combines Node 20 for compiling the React 19 + TypeScript frontend with a lightweight Python 3.11 slim image serving the FastAPI backend and bundled static assets.
+- **Automated Health Checks**: Implements `/api/health` enabling Render's zero-downtime rolling deploys and uptime monitors.
+- **Hosted Demo Sandbox Mode (`HOSTED_DEMO=true`)**: A dedicated security boundary that locks directory scanning and organizing strictly to the synthetic `sample_workspace/`. This allows public visitors to test LazyDesk AI on Render without exposing the host container's filesystem.
+
+---
+
+## 3. Demo Walkthrough
+
+Check out the verified demo recording of the complete workflow:
 `file:///C:/Users/akash_ude/.gemini/antigravity-ide/brain/394c869b-990e-40b3-b6ec-2286aeb968d2/lazydesk_demo_1792937463412.webp`
 
-### Quick Run
+### Quick Run Locally
 ```bash
 git clone https://github.com/your-username/lazydesk-ai.git
 cd lazydesk-ai
+ollama pull gemma2:2b
 python run.py
 ```
-This automatically starts the backend API, loads the pre-built warm-ivory web UI, spins up the demo workspace, and checks your local Ollama runtime.
+This automatically starts the backend API, loads the pre-built warm-ivory web UI, spins up the demo workspace, and connects to Google Gemma 2.
 
 ---
 
-## 3. Code
+## 4. Code & Architecture
 
 - **Repository**: [LazyDesk AI on GitHub](https://github.com/your-username/lazydesk-ai)
-- **License**: MIT License (Application) • Apache 2.0 (Qwen 2.5 3B Model Weights)
-- **Tech Stack**: React 19, TypeScript, Vite, FastAPI, Uvicorn, PyMuPDF, python-docx, SQLite, Ollama.
+- **License**: MIT License (Application) • Google Gemma Terms of Use (Gemma 2 Model)
+- **Tech Stack**: React 19, TypeScript, Vite, FastAPI, Uvicorn, PyMuPDF, python-docx, SQLite, Ollama, Google Gemma 2, Render Blueprint.
 
 ---
 
-## 4. How I Built It
+## 5. Security & Safety Boundaries
 
-LazyDesk AI was engineered around strict privacy, deterministic safety boundaries, and local open-weight AI:
-
-### Architecture
-1. **Frontend**: Built with React 19, TypeScript, and Vite. I designed a custom design system ("Warm Ivory") featuring forest-green accents, soft sage cards, charcoal typography, and a friendly sloth mascot in various poses (relaxed, thinking, celebrating, sleeping).
-2. **Backend**: FastAPI with Uvicorn. The backend handles local filesystem scanning (`os.walk`), fast size-filtered SHA-256 hashing, chunked document extraction (PyMuPDF & python-docx), and SQLite operation journaling.
-3. **Local AI Engine**: Direct integration with Ollama's HTTP API (`http://localhost:11434`). The system uses `qwen2.5:3b` with strict JSON schema enforcement (`format="json"`).
-4. **Prompt Hardening**: Filenames, metadata, and extracted snippets are explicitly treated as **untrusted user data**. The system prompt instructs the model that file contents cannot override instructions or execute commands. The model **proposes** changes; deterministic Python code validates boundaries and executes file operations.
-5. **Path Traversal Protection & Collision Safety**: All target destinations are verified using `os.path.commonpath([root, dest]) == root`. Accidental overwrites are prevented by automatically generating non-colliding suffixes (`_1.ext`).
-6. **SQLite History & Undo**: Operations are written to a local journal (`lazydesk_history.db`). A dedicated `undo_session` routine moves files back to their exact original paths.
+1. **Untrusted Data Boundary**: Filenames and document text are treated as untrusted data. Prompts explicitly enforce that file contents cannot override model instructions.
+2. **Path Traversal Protection**: All destinations are validated with `os.path.commonpath([root, dest]) == root`. Operations cannot escape the selected folder.
+3. **Collision Avoidance**: Accidental overwrites are prevented by automatically generating non-colliding suffixes (`_1.ext`).
+4. **Reversible Journal**: All operations are recorded in SQLite and can be rolled back in 1 click.
+5. **Render Cloud Sandbox**: When running on Render (`HOSTED_DEMO=true`), all filesystem access is locked to synthetic sample files.
 
 ---
 
-## 5. Why Does Open Innovation Matter?
-
-Open innovation is not just an alternative implementation; it is the fundamental reason LazyDesk AI can exist as a safe productivity tool:
-
-1. **Privacy by Architecture**: Desktop decluttering requires reading your tax receipts, employment contracts, personal journals, and draft notes. Uploading these documents to proprietary cloud APIs creates significant privacy, compliance, and confidentiality liabilities. Local open-weight models keep your files strictly on your own device.
-2. **User Sovereignty & Model Choice**: With Ollama and open weights, users are not captive to a single vendor's pricing or terms of service. You can run Qwen, Llama, Mistral, or Gemma, and switch between models freely.
-3. **Zero Per-Token API Costs**: Cloud AI models charge per token, turning a 1,000-file cleanup into an expensive recurring subscription. Local inference runs for free on your existing hardware.
-4. **True Offline Potential**: After pulling model weights once (`ollama pull qwen2.5:3b`), LazyDesk operates completely disconnected—on planes, trains, or in high-security air-gapped environments.
-5. **Auditable Transparency**: The source code, prompts, schema validation, and filesystem operations can be inspected, tested, and audited by anyone.
-
----
-
-## 6. The Lazy Payoff
-
-Decluttering a typical workspace folder with 50-100 messy downloads usually requires 20-40 minutes of clicking, creating folders, renaming files, and opening PDFs to see what they contain.
-
-With LazyDesk AI:
-- **Scan & Duplicate Detection**: ~150 ms (local SHA-256).
-- **AI Categorization & Filename Suggestion**: ~10-15 seconds on a standard computer.
-- **Review & Execution**: 1 click.
-- **Estimated Time Saved**: ~30 minutes per cleanup session, with zero cognitive friction and zero manual sorting.
-
----
-
-## 7. Prize Categories
+## 6. Prize Categories
 
 This project is submitted for:
 - **Hacktoberfest Open-Source AI Challenge — Week 3: Slow and Steady**
-  *Tagline: "Stay lazy. Get organized."*
+- **Best Use of Gemma** (Google Gemma 2 2B default model for file classification and document summarization)
+- **Best Use of Render** (Render Blueprint `render.yaml`, multi-stage Dockerfile, `/api/health` monitoring, and sandboxed hosted demo mode)
 
 ---
 
-*Built with passion, caffeine, and sloth-like patience during Hacktoberfest 2026.* 🦥
+*Stay lazy. Get organized with LazyDesk AI.* 🦥

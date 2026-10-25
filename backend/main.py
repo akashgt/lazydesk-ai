@@ -69,6 +69,7 @@ async def get_health():
         "status": "healthy",
         "app_name": settings.app_name,
         "version": settings.version,
+        "is_hosted_demo": settings.is_hosted_demo,
         "ollama": ollama_status.model_dump(),
     }
 
@@ -85,7 +86,14 @@ async def scan_folder(req: ScanRequest):
     if not req.directory_path.strip():
         raise HTTPException(status_code=400, detail="Directory path cannot be empty.")
     
-    result = scan_directory(req.directory_path)
+    target_path = req.directory_path
+    if settings.is_hosted_demo:
+        # In hosted demo deployments, strictly sandbox file exploration to the demo workspace
+        target_path = str(settings.hosted_workspace_dir.resolve())
+        if not Path(target_path).exists():
+            setup_demo_workspace(Path(target_path))
+
+    result = scan_directory(target_path)
     if result.error:
         raise HTTPException(status_code=400, detail=result.error)
     return result
@@ -280,6 +288,9 @@ async def get_picker_suggestions():
     desktop_dir = Path.home() / "Desktop"
     downloads_dir = Path.home() / "Downloads"
     docs_dir = Path.home() / "Documents"
+
+    if settings.is_hosted_demo:
+        return {"suggestions": [{"name": "Sample Workspace (Hosted Sandbox)", "path": str(demo_dir.resolve())}]}
 
     suggestions = [
         {"name": "Sample Workspace (Demo)", "path": str(demo_dir.resolve())},

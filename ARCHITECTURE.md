@@ -13,32 +13,36 @@ LazyDesk AI is a privacy-first, desktop-class digital assistant that automates f
 |   Dashboard | Smart Organizer | Summarizer | Duplicate Finder | Lazy Mode       |
 +---------------------------------------------------------------------------------+
                                        |
-                              REST / JSON API
+                               REST / JSON API
                                        |
 +---------------------------------------------------------------------------------+
-|                              FASTAPI BACKEND                                    |
+|                      FASTAPI BACKEND / RENDER CONTAINER                         |
 |                                                                                 |
 |  +--------------------+   +---------------------+   +------------------------+  |
 |  | Smart Scanner      |   | Fast SHA-256 Hasher |   | Local Extractor        |  |
-|  | (os.walk, safety)  |   | (size pre-filter)   |   | (PyMuPDF, docx, txt)   |  |
+|  | (os.walk, sandbox) |   | (size pre-filter)   |   | (PyMuPDF, docx, txt)   |  |
 |  +--------------------+   +---------------------+   +------------------------+  |
 |            |                         |                          |               |
 |  +---------------------------------------------------------------------------+  |
-|  | Local AI Service (Ollama HTTP Gateway)                                    |  |
-|  | Model: qwen2.5:3b (JSON schema enforcement, injection defense, retries)   |  |
+|  | Local AI Service Adapter (Ollama HTTP Gateway / Local Heuristics)         |  |
+|  | Model: Google Gemma 2 2B (gemma2:2b) - JSON schema enforcement & bounds   |  |
 |  +---------------------------------------------------------------------------+  |
 |            |                                                                    |
 |  +-----------------------------------------+   +-----------------------------+  |
 |  | Action Planner & Safe Executor          |   | SQLite History & Journal    |  |
 |  | (Boundary validation, collision safety) |   | (Reversible 1-click Undo)   |  |
 |  +-----------------------------------------+   +-----------------------------+  |
+|            |                                                                    |
+|  +---------------------------------------------------------------------------+  |
+|  | Cloud Health & Sandbox Layer: /api/health | HOSTED_DEMO=true Sandbox      |  |
+|  +---------------------------------------------------------------------------+  |
 +---------------------------------------------------------------------------------+
                                        |
-                              Local HTTP (11434)
+                         Local HTTP (11434 / In-process)
                                        |
 +---------------------------------------------------------------------------------+
-|                           LOCAL OLLAMA RUNTIME                                  |
-|                      qwen2.5:3b (Open-Weight Model)                             |
+|                       LOCAL OLLAMA INFERENCE ENGINE                             |
+|               Google Gemma 2 2B (gemma2:2b, Open Weights)                      |
 +---------------------------------------------------------------------------------+
 ```
 
@@ -53,6 +57,7 @@ LazyDesk AI is a privacy-first, desktop-class digital assistant that automates f
    - Skips symlinks and hidden/system folders (`.git`, `node_modules`, `venv`, `$RECYCLE.BIN`).
    - Categorizes files by extension into `Documents`, `Work & Study`, `Images & Media`, `Code & Dev`, `Archives`, `Miscellaneous`.
    - Identifies candidate files for archiving (unmodified for > 90 days or large unreferenced files).
+   - Sandboxing: In `HOSTED_DEMO=true` mode, all scanning is forced to remain within the synthetic `sample_workspace/`.
 
 2. **`backend.hasher`**:
    - Optimized two-tier duplicate detection:
@@ -69,7 +74,8 @@ LazyDesk AI is a privacy-first, desktop-class digital assistant that automates f
 
 4. **`backend.ai_service`**:
    - Connects to Ollama (`http://localhost:11434`).
-   - Uses `format="json"` with temperature 0.2 for deterministic categorization and summarization.
+   - Default model: **`gemma2:2b`** (Google Gemma 2 2B open weights).
+   - Strict JSON Schema prompting: Injects concrete output schemas into the prompt with temperature 0.1, context window limited to 1,536 tokens, and max prediction bounded to 380 tokens for rapid deterministic response on CPU/GPU.
    - Hardened system prompt: Explicitly treats file contents as untrusted data to defend against prompt injection.
    - Graceful fallback: If Ollama is offline or uninstalled, deterministic heuristic rules classify files and extract key sentences without crashing.
 
@@ -81,8 +87,9 @@ LazyDesk AI is a privacy-first, desktop-class digital assistant that automates f
 
 6. **`backend.history`**:
    - Persists session metadata and granular file operations in SQLite (`lazydesk_history.db`).
+   - Context-managed SQLite connections preventing database file locking.
    - Tracks `(source_path, destination_path, status, is_undone)`.
-   - Undo Manager: Safely reverts moved/renamed files back to their original source locations.
+   - Undo Manager: Safely reverts moved/renamed files back to their exact original paths.
 
 7. **`backend.demo_workspace`**:
    - Generates fictional, realistic sample files (invoices, meeting notes, todo lists, duplicated images) for safe exploration without risking real personal files.
@@ -95,19 +102,22 @@ LazyDesk AI is a privacy-first, desktop-class digital assistant that automates f
 1. **User Action**: Clicks "Run Full Lazy Declutter".
 2. **Scanner & Hasher**: Gathers file metadata, detects duplicates, and measures disk usage.
 3. **Extractor**: Pulls snippets from text and documents.
-4. **Local AI Service**: Prompts `qwen2.5:3b` with untrusted snippets and receives structured JSON.
+4. **Local AI Service**: Prompts Google Gemma 2 (`gemma2:2b`) with untrusted snippets and receives structured JSON.
 5. **Action Planner**: Generates dry-run operations and checks path boundaries.
 6. **Summarizer**: Produces executive bullet points and deadlines for top documents.
-7. **User Review**: Displays consolidated report. Operations remain staged until the user clicks "Approve & Execute".
-8. **Execution**: Safely moves files into organized folders and writes to the SQLite journal.
-9. **Reversibility**: User can click "Undo" at any time to return files to their exact initial paths.
+7. **Staging UI**: Displays all proposed operations with interactive checkboxes.
+8. **Execution**: Moves approved files into clean subdirectories, recording each step in the SQLite journal.
+9. **1-Click Undo**: Reverts all operations back to their initial state on demand.
 
 ---
 
-## 4. Privacy & Security Model
+## 4. Cloud Deployment (Render)
 
-- **No Remote Calls**: The application never talks to external APIs or telemetry servers.
-- **Local Weight Inference**: Runs against local Ollama inference server.
-- **Strict Boundary Check**: Deterministic validation prevents path traversal escapes.
-- **Zero Accidental Overwrite**: Collision avoidance ensures no data loss.
-- **Reversibility**: Operations are journaled in SQLite and reversible with 1-click Undo.
+LazyDesk AI provides first-class support for cloud deployment on Render:
+- **Render Blueprint (`render.yaml`)**:
+  - `type: web`, `env: docker`, `plan: starter`
+  - Health check path: `/api/health`
+  - Dynamic port binding: reads `$PORT` and runs Uvicorn on `0.0.0.0:$PORT`.
+- **Hosted Demo Sandbox Mode (`HOSTED_DEMO=true`)**:
+  - Ensures visitors to the hosted cloud demo can explore all features (scanning, duplicate detection, categorization, executive summaries, undo) strictly within synthetic document collections.
+  - Rejects attempts to traverse into host server root directories.

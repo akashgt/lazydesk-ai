@@ -66,7 +66,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </h1>
 
           <p className="text-emerald-100/90 text-base md:text-lg leading-relaxed">
-            Stay lazy. Let your local open-weight AI (<span className="font-mono text-emerald-200 font-semibold">{ollamaStatus?.configured_model || 'qwen2.5:3b'}</span>) sort the clutter, detect duplicates, and summarize documents with complete privacy.
+            Stay lazy. Let your local open-weight AI (<span className="font-mono text-emerald-200 font-semibold">{ollamaStatus?.configured_model || 'gemma2:2b'}</span>) sort the clutter, detect duplicates, and summarize documents with complete privacy.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
@@ -173,7 +173,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div className="text-2xl font-extrabold text-stone-900 font-brand truncate">
-            {ollamaStatus?.configured_model || 'qwen2.5:3b'}
+            {ollamaStatus?.configured_model || 'gemma2:2b'}
           </div>
           <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
             <CheckCircle2 className="w-3.5 h-3.5" />

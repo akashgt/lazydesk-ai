@@ -6,8 +6,10 @@ class Settings(BaseSettings):
     app_name: str = "LazyDesk AI"
     version: str = "1.0.0"
     ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    default_model: str = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
+    default_model: str = os.getenv("OLLAMA_MODEL", "gemma2:2b")
     db_path: Path = Path(os.getenv("LAZYDESK_DB", "lazydesk_history.db"))
+    is_hosted_demo: bool = os.getenv("HOSTED_DEMO", "false").lower() in ("true", "1", "yes")
+    hosted_workspace_dir: Path = Path(os.getenv("HOSTED_WORKSPACE_DIR", "sample_workspace"))
     
     # Supported file extensions by category
     document_extensions: set[str] = {".pdf", ".docx", ".txt", ".md", ".csv", ".xlsx", ".pptx", ".rtf", ".odt"}

@@ -27,7 +27,7 @@ export const WhyOpenAiView: React.FC<WhyOpenAiViewProps> = ({
   onRefreshHealth,
 }) => {
   const [selectedModel, setSelectedModel] = useState<string>(
-    ollamaStatus?.configured_model || 'qwen2.5:3b'
+    ollamaStatus?.configured_model || 'gemma2:2b'
   );
   const [isSwitching, setIsSwitching] = useState(false);
   const [pingLatency, setPingLatency] = useState<number | null>(null);
@@ -62,7 +62,7 @@ export const WhyOpenAiView: React.FC<WhyOpenAiViewProps> = ({
   };
 
   const copyPullCommand = () => {
-    navigator.clipboard.writeText('ollama pull qwen2.5:3b');
+    navigator.clipboard.writeText('ollama pull gemma2:2b');
     setCopiedCmd(true);
     setTimeout(() => setCopiedCmd(false), 2000);
   };
@@ -127,8 +127,33 @@ export const WhyOpenAiView: React.FC<WhyOpenAiViewProps> = ({
             <span>Distinct Open-Source & Model Licensing</span>
           </h4>
           <p className="text-xs text-stone-600 leading-relaxed">
-            LazyDesk AI application code is published under the permissive <strong>MIT License</strong>. The default model weights (<code className="font-mono text-emerald-900 bg-stone-200 px-1 py-0.5 rounded">qwen2.5:3b</code>) are released under the <strong>Apache 2.0 License</strong> by Alibaba Cloud. The application and the model operate under their respective independent open licenses.
+            LazyDesk AI application code is published under the permissive <strong>MIT License</strong>. The default open-weight model weights (<code className="font-mono text-emerald-900 bg-stone-200 px-1 py-0.5 rounded font-semibold">gemma2:2b</code>) are released by Google under the permissive <strong>Gemma Terms of Use</strong>, granting free commercial and research redistribution under Google's Responsible Generative AI Guidelines. Alternate supported models like Qwen 2.5 operate under the Apache 2.0 license.
           </p>
+        </div>
+
+        {/* Render Deployment Partner Card */}
+        <div className="sloth-card p-6 space-y-3 bg-gradient-to-br from-stone-50 to-emerald-50/50 border-emerald-300 md:col-span-2">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+            <ExternalLink className="w-4 h-4 text-emerald-700" />
+            <span>Cloud Deployment with Render (Hosted Demo Architecture)</span>
+          </h4>
+          <p className="text-xs text-stone-700 leading-relaxed">
+            LazyDesk AI is configured for instant zero-configuration deployment on <strong>Render</strong> using our official Blueprint (<code className="font-mono text-emerald-900 bg-stone-200 px-1 py-0.5 rounded">render.yaml</code>) and multi-stage <code className="font-mono text-emerald-900 bg-stone-200 px-1 py-0.5 rounded">Dockerfile</code>.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1">
+            <div className="p-2.5 rounded-lg bg-white border border-emerald-200/80">
+              <span className="font-bold text-emerald-900 block">Render Blueprint</span>
+              <span className="text-[11px] text-stone-500">Auto-provisions unified web service & health checks</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-white border border-emerald-200/80">
+              <span className="font-bold text-emerald-900 block">Sandboxed Demo Mode</span>
+              <span className="text-[11px] text-stone-500">Restricts hosted sessions to synthetic sample files</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-white border border-emerald-200/80">
+              <span className="font-bold text-emerald-900 block">Health Check Monitor</span>
+              <span className="text-[11px] text-stone-500">Zero-downtime monitoring at <code className="font-mono">/api/health</code></span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -179,7 +204,7 @@ export const WhyOpenAiView: React.FC<WhyOpenAiViewProps> = ({
           <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
             <span className="text-stone-500 uppercase text-[10px] font-bold">Active Model</span>
             <div className="font-mono font-bold text-sm text-stone-900 truncate">
-              {ollamaStatus?.configured_model || 'qwen2.5:3b'}
+              {ollamaStatus?.configured_model || 'gemma2:2b'}
             </div>
             <span className="text-[11px] text-stone-500">
               {ollamaStatus?.model_available ? 'Weights Verified Locally' : 'Not Pulled'}
@@ -242,7 +267,7 @@ export const WhyOpenAiView: React.FC<WhyOpenAiViewProps> = ({
 
             <pre className="p-3 rounded-lg bg-stone-950 text-emerald-400 overflow-x-auto">
               ollama serve{'\n'}
-              ollama pull qwen2.5:3b
+              ollama pull gemma2:2b
             </pre>
           </div>
         )}
