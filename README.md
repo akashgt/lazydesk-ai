@@ -134,6 +134,8 @@ LazyDesk will automatically start the unified server and open your browser to **
 
 ## ☁️ Deploying to Render
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/akashgt/lazydesk-ai)
+
 LazyDesk AI includes a complete **Render Blueprint (`render.yaml`)** and multi-stage `Dockerfile`.
 
 ### Option A: 1-Click Blueprint Deploy (Render Dashboard)
