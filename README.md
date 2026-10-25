@@ -113,7 +113,7 @@ ollama pull gemma2:2b
 
 ### 3. Clone & Install
 ```bash
-git clone https://github.com/your-username/lazydesk-ai.git
+git clone https://github.com/akashgt/lazydesk-ai.git
 cd lazydesk-ai
 
 # Install Python dependencies

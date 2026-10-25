@@ -51,7 +51,7 @@ Check out the verified demo recording of the complete workflow:
 
 ### Quick Run Locally
 ```bash
-git clone https://github.com/your-username/lazydesk-ai.git
+git clone https://github.com/akashgt/lazydesk-ai.git
 cd lazydesk-ai
 ollama pull gemma2:2b
 python run.py
@@ -62,7 +62,7 @@ This automatically starts the backend API, loads the pre-built warm-ivory web UI
 
 ## 4. Code & Architecture
 
-- **Repository**: [LazyDesk AI on GitHub](https://github.com/your-username/lazydesk-ai)
+- **Repository**: [LazyDesk AI on GitHub](https://github.com/akashgt/lazydesk-ai)
 - **License**: MIT License (Application) • Google Gemma Terms of Use (Gemma 2 Model)
 - **Tech Stack**: React 19, TypeScript, Vite, FastAPI, Uvicorn, PyMuPDF, python-docx, SQLite, Ollama, Google Gemma 2, Render Blueprint.
 
