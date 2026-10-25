@@ -7,7 +7,7 @@
 [![Google Gemma 2](https://img.shields.io/badge/Model-Google%20Gemma%202%20(2B)-4285F4.svg?logo=google&logoColor=white)](https://ai.google.dev/gemma)
 [![Render Blueprint](https://img.shields.io/badge/Render-Deploy%20Ready-46E3B7.svg?logo=render&logoColor=black)](render.yaml)
 [![Tests Passing](https://img.shields.io/badge/Tests-11%20Passed-brightgreen.svg)](backend/tests/)
-[![Hacktoberfest](https://img.shields.io/badge/Hacktoberfest-Week%203%20Challenge-orange.svg)](DEV_POST.md)
+[![Hacktoberfest](https://img.shields.io/badge/Hacktoberfest-Week%203%20Challenge-orange.svg)](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)
 
 **LazyDesk AI** is a privacy-first, desktop-class digital productivity assistant inspired by the philosophy of the sloth: do less manual work and let local open-weight automation handle the boring chores. 
 
